@@ -60,3 +60,9 @@ def main():# main function ko lagi
 if __name__ == "__main__":
     main()# main function call garna ko lagi
 # yo code ma kharcha haru add garna, dekhna, ra total dekhna ko lagi function haru banako cha.
+
+#still in progress nedd to add the following features:
+# 1. Add a feature to delete an expense.
+# 2. Add a feature to edit an expense.
+# 3. Add a feature to filter expenses by category.
+# 4. Excepltion handling for file operations.
