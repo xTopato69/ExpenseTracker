@@ -1,6 +1,9 @@
-[
-   {
-      "category": "food",
-      "amount": 400.0
-   }
-]
+{
+   "budget": 4500.0,
+   "expenses": [
+      {
+         "category": "food",
+         "amount": 500.0
+      }
+   ]
+}
