@@ -48,6 +48,16 @@ def view_transactions():
     print("\nTransaction history:")
     for index, exp in enumerate(data["expenses"], start=1):
         print(f"{index}. {exp['category']}: Rs{exp['amount']}")
+
+def view_categories():# category haru herna ko lagi
+    if not data["expenses"]:
+        print("No categories found. Please add expenses first.")
+        return
+    categories = set(exp['category'] for exp in data["expenses"])
+    print("\nUsed Categories:")
+    for index, cat in enumerate(categories, start=1):
+        print(f"{index}. {cat}")
+
 def filter_by_category():
     if not data["expenses"]:
         print("No expenses found.")
@@ -88,8 +98,9 @@ def main():
         print("2. Add Expense")
         print("3. View Transaction History")
         print("4. Show Total Expenses and Remaining Budget")
-        print("5. Filter Expenses by Category")  
-        print("6. Exit")
+        print("5. View Categories")
+        print("6. Filter Expenses by Category")  
+        print("7. Exit")
 
         choice = input("Enter your choice: ")
     
@@ -102,10 +113,12 @@ def main():
         elif choice == "4":
             total_expenses()
         elif choice == "5":
-            filter_by_category()
+            view_categories()
         elif choice == "6":
+            filter_by_category()
+        elif choice == "7":
             print("Exiting the program.")
-            export_to_csv()
+            export_to_csv() #directly exit huda csv save garna ko lagi
             break
             
         else:
