@@ -1,5 +1,6 @@
 import json 
 import os
+import csv
 
 data ={"budget":0, "expenses":[]}# kharcha haru ko lagi dictionary banako cha
 
@@ -53,6 +54,19 @@ def total_expenses():
     print(f"Total expenses: Rs{total}")
     print(f"Remaining budget: Rs{data["budget"]}")
 
+def export_to_csv():
+    if not data["expenses"]:
+        print("No expenses to export.")
+        return
+    with open("expenses.csv", "w", newline="") as csvfile:
+        fieldnames = ["Category", "Amount"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for expense in data["expenses"]:
+            writer.writerow({"Category": expense["category"], "Amount": expense["amount"]})
+    print("Expenses exported to expenses.csv.")
+
 def main():
     while True:
         print("\n--- Expense Tracker ---")
@@ -61,6 +75,8 @@ def main():
         print("3. View Transaction History")
         print("4. Show Total Expenses and Remaining Budget")
         print("5. Exit")
+        print("6. Export Expenses to CSV")  # New opt
+
         choice = input("Enter your choice: ")
     
         if choice == "1":
@@ -74,6 +90,8 @@ def main():
         elif choice == "5":
             print("Exiting the program.")
             break
+        elif choice == "6":
+            export_to_csv()
         else:
             print("Invalid choice. Please try again.")
 if __name__ == "__main__":
