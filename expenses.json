@@ -1,5 +1,5 @@
 {
-   "budget": 4100.0,
+   "budget": 2100.0,
    "expenses": [
       {
          "category": "food",
@@ -8,6 +8,10 @@
       {
          "category": "drinks",
          "amount": 400.0
+      },
+      {
+         "category": "food",
+         "amount": 1000.0
       }
    ]
 }

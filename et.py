@@ -48,6 +48,18 @@ def view_transactions():
     print("\nTransaction history:")
     for index, exp in enumerate(data["expenses"], start=1):
         print(f"{index}. {exp['category']}: Rs{exp['amount']}")
+def filter_by_category():
+    if not data["expenses"]:
+        print("No expenses found.")
+        return
+    category = input("Enter the category to filter: ")
+    filtered = [exp for exp in data["expenses"] if exp["category"].lower() == category.lower()]
+    if not filtered:
+        print(f"No expenses found for category: {category}")
+    else:
+        print(f"\nExpenses in category '{category}':")
+        for index, exp in enumerate(filtered, start=1):
+            print(f"{index}. Rs{exp['amount']}")
 
 def total_expenses():
     total = sum(exp['amount'] for exp in data["expenses"])
@@ -59,14 +71,16 @@ def export_to_csv():
         print("No expenses to export.")
         return
     with open("expenses.csv", "w", newline="") as csvfile:
-        fieldnames = ["Category", "Amount"]
+        fieldnames = ['category', 'amount']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         for expense in data["expenses"]:
-            writer.writerow({"Category": expense["category"], "Amount": expense["amount"]})
-    print("Expenses exported to expenses.csv.")
+            writer.writerow(expense)
 
+        writer.writerow({"category": "Remaining Budget", "amount": data["budget"]})
+        writer.writerow({"category": "Total Expenses", "amount": sum(exp['amount'] for exp in data["expenses"])})
+        print("Expenses exported to expenses.csv successfully.")
 def main():
     while True:
         print("\n--- Expense Tracker ---")
@@ -74,8 +88,8 @@ def main():
         print("2. Add Expense")
         print("3. View Transaction History")
         print("4. Show Total Expenses and Remaining Budget")
-        print("5. Exit")
-        print("6. Export Expenses to CSV")  # New opt
+        print("5. Filter Expenses by Category")  
+        print("6. Exit")
 
         choice = input("Enter your choice: ")
     
@@ -88,10 +102,12 @@ def main():
         elif choice == "4":
             total_expenses()
         elif choice == "5":
-            print("Exiting the program.")
-            break
+            filter_by_category()
         elif choice == "6":
+            print("Exiting the program.")
             export_to_csv()
+            break
+            
         else:
             print("Invalid choice. Please try again.")
 if __name__ == "__main__":
