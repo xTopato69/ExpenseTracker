@@ -1,5 +1,5 @@
 {
-   "budget": 1800.0,
+   "budget": 300.0,
    "expenses": [
       {
          "category": "food",
@@ -16,6 +16,11 @@
       {
          "category": "transport",
          "amount": 300.0
+      },
+      {
+         "category": "sport",
+         "amount": 1500.0,
+         "timestamp": "2025-04-23 08:15:01"
       }
    ]
 }

@@ -1,7 +1,8 @@
-category,amount
-food,500.0
-drinks,400.0
-food,1000.0
-transport,300.0
-Remaining Budget,1800.0
-Total Expenses,2200.0
+category,amount,timestamp
+food,500.0,
+drinks,400.0,
+food,1000.0,
+transport,300.0,
+sport,1500.0,2025-04-23 08:15:01
+Total Expenses,3700.0,
+Remaining Budget,300.0,

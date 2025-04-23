@@ -1,6 +1,9 @@
 import json 
 import os
 import csv
+import datetime
+import numpy as np
+import pandas as pd
 
 data ={"budget":0, "expenses":[]}# kharcha haru ko lagi dictionary banako cha
 
@@ -11,7 +14,9 @@ if os.path.exists("expenses.json") and os.path.getsize("expenses.json") :#expens
     except json.JSONDecodeError:
         print("Error: The json file is corrupted or empty.") # yo mailya expenses.json file bata data hatauda error aako vayara exception haleko 
 
-    
+def  expenses_df():
+    return pd.DataFrame(data["expenses"]) # expenses haru ko lagi pandas dataframe ma convert garna ko lagi
+
 
 def save_data():# expenses.json ma kharcha haru save garna ko lagi
     with open("expenses.json", "w") as file:
@@ -33,7 +38,10 @@ def add_expense():
         amount = float(input("Enter the amount: "))
         if amount > data ["budget"]:
             print("Expense exceeds budget. Please enter a valid amount.")
-        data["expenses"].append({"category": category, "amount": amount})
+            return
+    
+        timestamp= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data["expenses"].append({"category": category, "amount": amount, "timestamp":timestamp})
         data["budget"] -= amount # kharcha haru budget bata ghatauna ko lagi
         save_data()
         print("Expense added successfully.")
@@ -47,7 +55,7 @@ def view_transactions():
         return
     print("\nTransaction history:")
     for index, exp in enumerate(data["expenses"], start=1):
-        print(f"{index}. {exp['category']}: Rs{exp['amount']}")
+        print(f"{index}. {exp['category']}: Rs{exp['amount']} on {exp.get('timestamp', 'N/A')}")
 
 def view_categories():# category haru herna ko lagi
     if not data["expenses"]:
@@ -71,35 +79,46 @@ def filter_by_category():
         for index, exp in enumerate(filtered, start=1):
             print(f"{index}. Rs{exp['amount']}")
 
+
 def total_expenses():
-    total = sum(exp['amount'] for exp in data["expenses"])
-    print(f"Total expenses: Rs{total}")
-    print(f"Remaining budget: Rs{data["budget"]}")
+    amount = [exp['amount'] for exp in data["expenses"]]
+    if not amount:
+        print("No expenses found.")
+        return
+    np_amount = np.array(amount)
+    print(f"\nTotal Expenses: Rs{np_amount.sum()}")
+    print(f"Average Expense: Rs{np_amount.mean()}")
+    print(f"Maximum Expense: Rs{np_amount.max()}")
+    print(f"Minimum Expense: Rs{np_amount.min()}")
+    print(f"Remaining Budget: Rs{data['budget']}")
 
 def export_to_csv():
     if not data["expenses"]:
         print("No expenses to export.")
         return
-    with open("expenses.csv", "w", newline="") as csvfile:
-        fieldnames = ['category', 'amount']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    df= pd.DataFrame(data["expenses"])
 
-        writer.writeheader()
-        for expense in data["expenses"]:
-            writer.writerow(expense)
+    total_expenses = sum(exp['amount'] for exp in data["expenses"])
+    remaining_budget = data["budget"]
 
-        writer.writerow({"category": "Remaining Budget", "amount": data["budget"]})
-        writer.writerow({"category": "Total Expenses", "amount": sum(exp['amount'] for exp in data["expenses"])})
-        print("Expenses exported to expenses.csv successfully.")
+    all_data = pd.DataFrame([
+        {"category": "Total Expenses", "amount": total_expenses, "timestamp": ""},
+        {"category": "Remaining Budget", "amount": remaining_budget, "timestamp": ""}
+    ])
+    final_df = pd.concat([df, all_data], ignore_index=True)
+    
+    final_df.to_csv("expenses.csv", index=False)
+    print("Expenses exported to expenses.csv successfully.")
+
 def main():
     while True:
         print("\n--- Expense Tracker ---")
         print("1. Set Monthly Budget")
         print("2. Add Expense")
         print("3. View Transaction History")
-        print("4. Show Total Expenses and Remaining Budget")
+        print("4. Total Expenses ")
         print("5. View Categories")
-        print("6. Filter Expenses by Category")  
+        print("6. Filter Expenses by Category") 
         print("7. Exit")
 
         choice = input("Enter your choice: ")
@@ -130,6 +149,8 @@ if __name__ == "__main__":
 # yo code ma kharcha haru add garna, dekhna, ra total dekhna ko lagi function haru banako cha.
 
 #still in progress need to add the following features:
-#1.Add a feature to export expenses to a CSV file.
-#2.Implement a feature to filter expenses by category.
-#3.Add a feature to set a budget and track expenses against it.
+#1.Add a feature to export expenses to a CSV file. (finished)
+#2.Implement a feature to filter expenses by category.(finished)
+#3.Add a feature to set a budget and track expenses against it.(finished)
+#4.Implement a feature to view total expenses and remaining budget through csv.(finished)
+
