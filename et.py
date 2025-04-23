@@ -92,6 +92,53 @@ def total_expenses():
     print(f"Minimum Expense: Rs{np_amount.min()}")
     print(f"Remaining Budget: Rs{data['budget']}")
 
+
+def delete_expense():
+    if not data["expenses"]:
+        print("no expenses found.")
+        return
+    view_transactions()
+    try:
+        index= int(input("Enter the index of the expense to delete: ")) - 1
+        if 0<=inder<len(data["expenses"]):
+            deleted_expense = data["expenses"].pop(index)
+            data["budget"] += deleted_expense["amount"]
+            save_data()
+            print("expese deleted successfully.")
+        else:
+            print("Invalid index. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+def edit_expense():
+    if not data["expenses"]:
+        print("No expenses found.")
+        return
+    view_transactions()
+    try:
+        index= int(input("Enter the index of the expense to edit: ")) - 1
+        if 0<=index<len(data["expenses"]):
+            orginal = data["expenses"][index]
+            print(f"Original Expense: {orginal['category']}: Rs{orginal['amount']} on {orginal.get('timestamp', 'N/A')}")
+            new_category = input("Enter new category (or press Enter to keep it unchanged): ")
+            new_amount = input("Enter new amount (or press Enter to keep it unchanged): ")  
+
+            if new_category:
+                orginal["category"] = new_category
+            if new_amount:
+                new_amount = float(new_amount)
+                data["budget"] += orginal["amount"] - new_amount
+                data["budget"]-= new_amount
+                orginal["amount"] = new_amount
+            save_data()
+            print("Expense updated successfully.")
+        else:
+            print("Invalid index. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+
+
 def export_to_csv():
     if not data["expenses"]:
         print("No expenses to export.")
@@ -119,7 +166,9 @@ def main():
         print("4. Total Expenses ")
         print("5. View Categories")
         print("6. Filter Expenses by Category") 
-        print("7. Exit")
+        print("7. Edit Expense")
+        print("8. Delete Expense")
+        print("9. Exit")
 
         choice = input("Enter your choice: ")
     
@@ -136,6 +185,10 @@ def main():
         elif choice == "6":
             filter_by_category()
         elif choice == "7":
+            edit_expense()
+        elif choice == "8":
+            delete_expense()
+        elif choice == "9":
             print("Exiting the program.")
             export_to_csv() #directly exit huda csv save garna ko lagi
             break

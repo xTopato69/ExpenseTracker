@@ -1,5 +1,5 @@
 {
-   "budget": 300.0,
+   "budget": -1700.0,
    "expenses": [
       {
          "category": "food",
@@ -11,7 +11,7 @@
       },
       {
          "category": "food",
-         "amount": 1000.0
+         "amount": 1500.0
       },
       {
          "category": "transport",
