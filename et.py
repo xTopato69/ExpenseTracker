@@ -14,6 +14,7 @@ if os.path.exists("expenses.json") and os.path.getsize("expenses.json") :#expens
     except json.JSONDecodeError:
         print("Error: The json file is corrupted or empty.") # yo mailya expenses.json file bata data hatauda error aako vayara exception haleko 
 
+
 def  expenses_df():
     return pd.DataFrame(data["expenses"]) # expenses haru ko lagi pandas dataframe ma convert garna ko lagi
 
@@ -30,6 +31,7 @@ def set_budget():# budget set garna ko lagi
         print(f"Budget set to Rs{amount}.")
     except ValueError:
         print("Invalid amount. Please enter a Number.")
+        
 
 
 def add_expense():
@@ -100,7 +102,7 @@ def delete_expense():
     view_transactions()
     try:
         index= int(input("Enter the index of the expense to delete: ")) - 1
-        if 0<=inder<len(data["expenses"]):
+        if 0<=index<len(data["expenses"]):
             deleted_expense = data["expenses"].pop(index)
             data["budget"] += deleted_expense["amount"]
             save_data()
