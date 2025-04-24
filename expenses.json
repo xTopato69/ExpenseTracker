@@ -1,0 +1,21 @@
+{
+   "budget": 9000.0,
+   "expenses": [
+      {
+         "category": "food",
+         "amount": 500.0,
+         "timestamp": "2025-04-24 17:44:35"
+      },
+      {
+         "category": "travel",
+         "amount": 300.0,
+         "timestamp": "2025-04-24 17:44:42"
+      },
+      {
+         "category": "sport",
+         "amount": 200.0,
+         "timestamp": "2025-04-24 17:44:53"
+      }
+   ],
+   "loans": []
+}

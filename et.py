@@ -5,12 +5,14 @@ import datetime
 import numpy as np
 import pandas as pd
 
-data ={"budget":0, "expenses":[]}# kharcha haru ko lagi dictionary banako cha
+data ={"budget":0, "expenses":[], "loans":[]}# kharcha haru ko lagi dictionary banako cha
 
 if os.path.exists("expenses.json") and os.path.getsize("expenses.json") :#expenses.json list ma kharcha haru store huncha
     try:
         with open("expenses.json", "r") as file:
             data = json.load(file)
+        if "loans" not in data:
+            data["loans"] = []
     except json.JSONDecodeError:
         print("Error: The json file is corrupted or empty.") # yo mailya expenses.json file bata data hatauda error aako vayara exception haleko 
 
@@ -38,26 +40,62 @@ def add_expense():
     category = input("Enter the category: ")
     try:
         amount = float(input("Enter the amount: "))
-        if amount > data ["budget"]:
-            print("Expense exceeds budget. Please enter a valid amount.")
-            return
-    
-        timestamp= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data["expenses"].append({"category": category, "amount": amount, "timestamp":timestamp})
-        data["budget"] -= amount # kharcha haru budget bata ghatauna ko lagi
-        save_data()
-        print("Expense added successfully.")
+        
+        if amount > data["budget"]:  # expenses exceeds vayo vane
+            print("Expense exceeds budget!")
+            choice = input("Do you want to take a loan from eSewa? (yes/no): ").strip().lower()
+            if choice == "yes":
+                loan_amount = float(input("Enter loan amount to cover the expense: "))
+                
+                data["loans"].append({
+                    "amount": loan_amount,
+                    "source": "eSewa",
+                    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                })
+                
+                data["budget"] += loan_amount
+                print(f"Loan of Rs{loan_amount} taken from eSewa. New budget: Rs{data['budget']}\nNow again add expense.")
+            else:
+                print("Loan declined. Expense not added.")
+                return
+        else:
+            
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            data["expenses"].append({"category": category, "amount": amount, "timestamp": timestamp})
+            data["budget"] -= amount
+            print("Expense added successfully.")
+        
+        save_data()  # Save data after expense is added or loan is taken
     except ValueError:
-        print("Invalid amount. Please enter a Number.")
+        print("Invalid amount. Please enter a number.")
+
+
+def view_loans():
+    if not data["loans"]:
+        print("No loans found.")
+        return
+    print("\nLoan history:")
+    for index, loan in enumerate(data["loans"], start=1):
+        print(f"{index}. Loan of Rs{loan['amount']} from {loan['source']} on {loan.get('timestamp', 'N/A')}")
 
 
 def view_transactions():
-    if not data["expenses"]:
-        print("No expenses found.")
+    if not data["expenses"] and not data.get("loans"):
+        print("No transactions found.")
         return
     print("\nTransaction history:")
-    for index, exp in enumerate(data["expenses"], start=1):
-        print(f"{index}. {exp['category']}: Rs{exp['amount']} on {exp.get('timestamp', 'N/A')}")
+    if data["expenses"]:
+        print("\nExpenses:")
+        for index, exp in enumerate(data["expenses"], start=1):
+            print(f"{index}. {exp['category']}: Rs{exp['amount']} on {exp.get('timestamp', 'N/A')}")
+    else:
+        print("No expenses found.")
+    if data.get("loans"):
+        print("\nLoans:")
+        for index, loan in enumerate(data["loans"], start=1):
+            print(f"{index}. Loan of Rs{loan['amount']} from {loan['source']} on {loan.get('timestamp', 'N/A')}")
+    else:
+        print("")
 
 def view_categories():# category haru herna ko lagi
     if not data["expenses"]:
@@ -112,6 +150,24 @@ def delete_expense():
     except ValueError:
         print("Invalid input. Please enter a number.")
 
+def delete_all_data():
+    confirm = input("Are you sure you want to delete all transactions and loans? (yes/no): ")
+    if confirm.lower() == "yes":
+        total_returned = sum(exp["amount"] for exp in data["expenses"])
+        data["budget"] = 0
+        data["expenses"].clear()
+        data["loans"] = []  
+        save_data()
+
+        if os.path.exists("expenses.csv"):
+            os.remove("expenses.csv")
+            print("expenses.csv file deleted.")
+
+        print("All transactions and loans have been deleted.")
+    else:
+        print("Deletion cancelled.")
+
+
 def edit_expense():
     if not data["expenses"]:
         print("No expenses found.")
@@ -159,6 +215,8 @@ def export_to_csv():
     final_df.to_csv("expenses.csv", index=False)
     print("Expenses exported to expenses.csv successfully.")
 
+
+
 def main():
     while True:
         print("\n--- Expense Tracker ---")
@@ -170,7 +228,9 @@ def main():
         print("6. Filter Expenses by Category") 
         print("7. Edit Expense")
         print("8. Delete Expense")
-        print("9. Exit")
+        print("9. view loans")
+        print("10. Reset All Data")
+        print("11. Exit")
 
         choice = input("Enter your choice: ")
     
@@ -191,6 +251,10 @@ def main():
         elif choice == "8":
             delete_expense()
         elif choice == "9":
+            view_loans()
+        elif choice == "10":
+            delete_all_data()
+        elif choice == "11":
             print("Exiting the program.")
             export_to_csv() #directly exit huda csv save garna ko lagi
             break
